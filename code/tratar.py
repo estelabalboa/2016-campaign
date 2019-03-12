@@ -22,7 +22,7 @@ speech_data = load_files(r"texts/")
 
 X, y = speech_data.data, speech_data.target
 # speech_data.target gives an array of zeros and ones.
-print(y.__len__())
+print("Number of documents to be analyzed: " + str(y.__len__()))
 
 documents = []
 
@@ -39,7 +39,7 @@ else:
 # nltk.download()
 
 
-# nltk.download('stopwords')
+# nltk.download('stopwords') # Son palabras que tienen mucha frecuencia y no nos aportan valor
 # nltk.download('wordnet')
 
 stemmer = WordNetLemmatizer()
@@ -47,12 +47,15 @@ stemmer = WordNetLemmatizer()
 print("Stopwords and wordnet downloaded successful")
 
 for sen in range(0, len(X)):
-    
+    """
+    We go through all the documents from zero to n = 48
+    """
     # Remove all the special characters
     document: str = re.sub(r'\W', ' ', str(X[sen]))
+    print(document)
 
     # remove all single characters
-    document = re.sub(r'\s+[a-zA-Z]\s+', ' ', document)
+    document: str = re.sub(r'\s+[a-zA-Z]\s+', ' ', document)
 
     # Remove single characters from the start
     document = re.sub(r'\^[a-zA-Z]\s+', ' ', document) 
@@ -77,12 +80,12 @@ for sen in range(0, len(X)):
 
     documents.append(document)
 
-tfidfconverter = TfidfVectorizer(max_features=100, min_df=1, max_df=0.9, stop_words=stopwords.words('english'))  
+tfidfconverter = TfidfVectorizer(encoding='US-ASCII', max_features=1000, min_df=1, max_df=0.9, stop_words=stopwords.words('english'))
 tfidfconverter.fit(documents)
 X = tfidfconverter.transform(documents).toarray()
 
-#X = tfidfconverter.fit_transform(documents).toarray()
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=0)  
+# X = tfidfconverter.fit_transform(documents).toarray()
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.31, random_state=0)
 
 classifier = RandomForestClassifier(n_estimators=1000, random_state=0)  
 classifier.fit(X_train, y_train) 
@@ -92,7 +95,7 @@ y_pred = classifier.predict(X_test)
 print("Confusion Matrix: ")
 print(confusion_matrix(y_test,y_pred))
 
-print("Classification Report:c")
+print("Classification Report: ")
 print(classification_report(y_test,y_pred))
 
 print("Accuracy Score achieved: " + str(accuracy_score(y_test, y_pred)))
